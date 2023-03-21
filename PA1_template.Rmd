@@ -1,8 +1,25 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: "Reproducible Research Course Project 1"
+author: "Zain Naboulsi"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
   html_document:
-    keep_md: true
+    toc: yes
+    toc_float: no
+    theme: cosmo
+    keep_md: no
+    df_print: paged
+  pdf_document:
+    toc: yes
+    df_print: kable
+    number_sections: false
+    fig_caption: yes
+    highlight: tango
+    dev: pdf
+  word_document:
+    toc: yes
+    df_print: paged
+    keep_md: no
 ---
 
 ## Introduction
