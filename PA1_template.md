@@ -28,7 +28,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 ## Loading and Pre-Processing the Data
 We must first take the raw data and transform it into something useful for analysis. The only initial change is to turn the "date" column into a Date datatype for use later on.
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # read the data into a data frame called fitData
 fitData <- read.csv("activity.csv")
 
@@ -37,7 +38,15 @@ fitData$date <- as.Date(fitData$date)
 
 # show the first 5 rows of data
 head(fitData,5)
+```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
 ```
 
 Now we can begin answering the core questions of this assignment and gain insight into 
@@ -52,14 +61,22 @@ To answer the question of mean total number of steps we will break it down into 
 
 First, we calculate the total number of steps (removing NA rows) for the data.
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # calculate the total steps per day and put the result in a data frame
 total_steps <- aggregate(steps ~ date, data = fitData, FUN = function(x) sum(x, na.rm = TRUE))
 
 # Display the first five rows of total_steps
 head(total_steps, 5)
+```
 
-
+```
+##         date steps
+## 1 2012-10-02   126
+## 2 2012-10-03 11352
+## 3 2012-10-04 12116
+## 4 2012-10-05 13294
+## 5 2012-10-06 15420
 ```
 
 ### Histogram of the total number of steps taken each day
@@ -67,14 +84,10 @@ head(total_steps, 5)
 Second, to get a better sense of the data, we take a "bird's eye view" by creating
 a histogram of the total steps taken each day. 
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
-# make sure the proper libraries are loaded
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-```
 
-```{r, message = FALSE, warning = FALSE}
+
+
+```r
 # organize our data into total steps per day, ignoring NA values
 daily_steps <- fitData %>%
     na.omit() %>%
@@ -104,22 +117,34 @@ steps_histogram <- ggplot(daily_steps, aes(x = total_steps)) +
 
 # Print the steps_histogram to the screen
 print(steps_histogram)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 ### Calculate the mean and the median of the total number of steps taken per day
 
 Finally, we calculate the mean and median of the total steps taken per day. 
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Calculate mean and median
 mean_daily_steps <- mean(daily_steps$total_steps)
 median_daily_steps <- median(daily_steps$total_steps)
 
 # Display the mean and median
 cat("Mean of total steps per day: ", mean_daily_steps, "\n")
-cat("Median of total steps per day: ", median_daily_steps)
+```
 
+```
+## Mean of total steps per day:  10766.19
+```
+
+```r
+cat("Median of total steps per day: ", median_daily_steps)
+```
+
+```
+## Median of total steps per day:  10765
 ```
 
 ## What is the Average Daily Activity Pattern?
@@ -132,7 +157,8 @@ for easy consumption.
 First, a time-series plot of the five-minute interval (x-axis) and the average number of steps taken,
 which is then averaged across all days (y-axis) is plotted.
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Using 'fitData' as the data frame name
 average_interval_steps <- fitData %>%
     filter(!is.na(steps)) %>% # Remove any rows with NA values for steps
@@ -160,8 +186,9 @@ steps_time_series_plot <- ggplot(average_interval_steps, aes(x = interval, y = a
 
 # Print the time series plot
 print(steps_time_series_plot)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 ### Five-Minute Interval (Averaged Across All Days) with Max Steps
 
@@ -169,7 +196,8 @@ Second, we calculate which five-minute interval, on average across all the days 
 contains the manimum number of steps. Keep in mind the dataset used is the one that has removed
 all NA values (average_interval_steps)
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Using 'fitData' as the data frame name
 average_interval_steps <- fitData %>%
     filter(!is.na(steps)) %>% # Remove any rows with NA values for steps
@@ -183,7 +211,11 @@ max_interval <- average_interval_steps %>%
 
 # Print the result
 cat("The Five-Minute Interval (Averaged Across All Days) with the Maximum Number of Steps","\n", "and NA Values Removed is", max_interval)
+```
 
+```
+## The Five-Minute Interval (Averaged Across All Days) with the Maximum Number of Steps 
+##  and NA Values Removed is 835
 ```
 
 ## Imputing missing values
@@ -200,13 +232,17 @@ the dataset or fill in the missing values using the mean or median of the availa
 However, if there are many missing values, a more sophisticated imputation method might be 
 necessary, such as using a predictive model or multiple imputation.
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # calculate the total missing values
 total_missing_values <- sum(is.na(fitData$steps))
 
 # Print the total_missing_values
 cat("The total number of missing values in the dataset is", total_missing_values)
+```
 
+```
+## The total number of missing values in the dataset is 2304
 ```
 ### Create a New Dataset with Missing Data Filled In Using the Mean
 
@@ -214,7 +250,8 @@ Second, we need to decide on an impute methodology and implement it to create a 
 dataset. Fortunately, the amount of missing data is relatively small so we can use 
 a simple mean imputation method. 
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Use the mean to fill in missing data
 fill_mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
 
@@ -225,7 +262,18 @@ filled_fitData <- fitData %>%
 
 # Print the first 5 rows of the filled dataset to verify the results
 head(filled_fitData, n = 5)
+```
 
+```
+## # A tibble: 5 × 3
+## # Groups:   interval [5]
+##    steps date       interval
+##    <dbl> <date>        <int>
+## 1 1.72   2012-10-01        0
+## 2 0.340  2012-10-01        5
+## 3 0.132  2012-10-01       10
+## 4 0.151  2012-10-01       15
+## 5 0.0755 2012-10-01       20
 ```
 
 ### Histogram of the Total Steps / Day with Filled In Data
@@ -233,7 +281,8 @@ head(filled_fitData, n = 5)
 Third, we diplay a visual representation of the data for comparison with the previous, 
 non-filled, data. 
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Using 'filled_fitData' as the data frame name
 daily_steps <- filled_fitData %>%
     group_by(date) %>%
@@ -262,14 +311,16 @@ filled_data_histogram <- ggplot(daily_steps, aes(x = total_steps)) +
 
 # Print the Beautiful Visualization-inspired histogram plot
 print(filled_data_histogram)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 ### Calculate the mean and the median of the total number of steps taken per day with filled in data
 
 Finally, for comparison with the non-filled data, we calculate the mean and median. 
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Using 'filled_fitData' as the data frame name
 daily_steps <- filled_fitData %>%
     group_by(date) %>%
@@ -279,8 +330,18 @@ daily_steps <- filled_fitData %>%
 mean_steps <- mean(daily_steps$total_steps)
 median_steps <- median(daily_steps$total_steps)
 cat("The mean total number of steps taken per day is", round(mean_steps), "steps.\n")
-cat("The median total number of steps taken per day is", median_steps, "steps.")
+```
 
+```
+## The mean total number of steps taken per day is 10766 steps.
+```
+
+```r
+cat("The median total number of steps taken per day is", median_steps, "steps.")
+```
+
+```
+## The median total number of steps taken per day is 10766.19 steps.
 ```
 #### Analysis Compared to Prior Mean and Median
 **Do these values differ from the estimates from the first part of the assignment?** 
@@ -301,12 +362,25 @@ We will do this in two steps.
 First, we need to determine if each day in our data is a weekday or a weekend day. 
 To do this we create a new column with each day labled appropriately.
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Using 'filled_fitData' as the data frame name
 filled_fitData$day_type <- factor(ifelse(weekdays(as.Date(filled_fitData$date)) %in% c("Saturday", "Sunday"), "weekend", "weekday"))
 
 # Print the first 5 rows of the modified dataset to verify the results
 head(filled_fitData, n = 5)
+```
+
+```
+## # A tibble: 5 × 4
+## # Groups:   interval [5]
+##    steps date       interval day_type
+##    <dbl> <date>        <int> <fct>   
+## 1 1.72   2012-10-01        0 weekday 
+## 2 0.340  2012-10-01        5 weekday 
+## 3 0.132  2012-10-01       10 weekday 
+## 4 0.151  2012-10-01       15 weekday 
+## 5 0.0755 2012-10-01       20 weekday
 ```
 
 ### Time Series Panel Plot Showing Average Steps Across Week and Weekend Days (Five-Minute Average)
@@ -315,7 +389,8 @@ Finally, now that we have our days labeled, we can create a panel plot containin
 of the five-minute interval (x-axis) and the average number of steps taken, averaged across 
 all weekday days or weekend days (y-axis).
 
-```{r, message = FALSE, warning = FALSE}
+
+```r
 # Calculate the average number of steps for each interval and day type
 avg_steps <- filled_fitData %>%
     group_by(interval, day_type) %>%
@@ -351,6 +426,8 @@ average_steps_plot <- ggplot(avg_steps, aes(x = interval, y = avg_steps, color =
 # Print the panel plot
 print(average_steps_plot)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ## Conclusion
 In this assignment we made use of data from a personal activity monitoring device and provided insight into that data. We answered a series of questions that will help drive deeper analysis going forward.  
